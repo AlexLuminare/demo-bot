@@ -1,16 +1,18 @@
 package main
 
 import (
+	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	"github.com/joho/godotenv"
 	"log"
 	"os"
 	"time"
 )
 
 func main() {
-
+	godotenv.Load(".ENV")
 	Token := os.Getenv("TELEGRAM_TOKEN")
-
+	fmt.Println("TOKEN: ", Token)
 	bot, err := tgbotapi.NewBotAPI(Token)
 	if err != nil {
 		log.Panic(err)
@@ -39,8 +41,8 @@ func main() {
 		}
 		// Add logic here
 		log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
-		msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
-		msg.ReplyToMessageID = update.Message.MessageID
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "You wrote: "+update.Message.Text)
+		//msg.ReplyToMessageID = update.Message.MessageID
 		bot.Send(msg)
 
 	}
