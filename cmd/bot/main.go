@@ -15,6 +15,7 @@ func main() {
 	Token := os.Getenv("TELEGRAM_TOKEN")
 	fmt.Println("TOKEN: ", Token)
 	bot, err := tgbotapi.NewBotAPI(Token)
+	router := NewCommandRouter(bot)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -48,15 +49,13 @@ func main() {
 
 		switch update.Message.Command() {
 		case "help":
-			helpCommand(bot, update.Message)
+			router.Help(update.Message)
 		case "list":
-			listCommand(bot, update.Message, productService)
+			router.List(update.Message, productService)
 		default:
-			DefaultBehavior(bot, update.Message)
+			router.Default(update.Message)
 
 		}
-
 		//msg.ReplyToMessageID = update.Message.MessageID
-
 	}
 }
