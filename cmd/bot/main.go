@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/AlexLuminare/demo-bot/internal/service/product"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/joho/godotenv"
 	"log"
@@ -17,6 +18,9 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
+
+	//ВСЕ СЕРВИСЫ ИНИЦИАЛИЗИРУЕМ ЗДЕСЬ
+	productService := product.NewService()
 
 	bot.Debug = true
 
@@ -34,7 +38,7 @@ func main() {
 	// a large backlog of old messages
 	time.Sleep(time.Millisecond * 500)
 	updates.Clear()
-	var msg tgbotapi.MessageConfig
+	//var msg tgbotapi.MessageConfig
 
 	for update := range updates {
 		if update.Message == nil {
@@ -44,17 +48,15 @@ func main() {
 
 		switch update.Message.Command() {
 		case "help":
-
-			msg = tgbotapi.NewMessage(update.Message.Chat.ID, "Здеся будут подробнейшие описания")
-			msg.ReplyToMessageID = update.Message.MessageID
+			helpCommand(bot, update.Message)
+		case "list":
+			listCommand(bot, update.Message, productService)
 		default:
-			msg = tgbotapi.NewMessage(update.Message.Chat.ID, "You wrote: "+update.Message.Text)
+			DefaultBehavior(bot, update.Message)
+
 		}
 
-		log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
-
 		//msg.ReplyToMessageID = update.Message.MessageID
-		bot.Send(msg)
 
 	}
 }
