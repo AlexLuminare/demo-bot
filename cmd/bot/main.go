@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/AlexLuminare/demo-bot/internal/app/commands"
 	"github.com/AlexLuminare/demo-bot/internal/service/product"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/joho/godotenv"
@@ -15,14 +16,13 @@ func main() {
 	Token := os.Getenv("TELEGRAM_TOKEN")
 	fmt.Println("TOKEN: ", Token)
 	bot, err := tgbotapi.NewBotAPI(Token)
-	router := NewCommandRouter(bot)
 	if err != nil {
 		log.Panic(err)
 	}
 
 	//ВСЕ СЕРВИСЫ ИНИЦИАЛИЗИРУЕМ ЗДЕСЬ
 	productService := product.NewService()
-
+	commander := commands.NewCommandRouter(bot, productService)
 	bot.Debug = true
 
 	log.Printf("Authorized on account %s", bot.Self.UserName)
@@ -49,11 +49,11 @@ func main() {
 
 		switch update.Message.Command() {
 		case "help":
-			router.Help(update.Message)
+			commander.Help(update.Message)
 		case "list":
-			router.List(update.Message, productService)
+			commander.List(update.Message)
 		default:
-			router.Default(update.Message)
+			commander.Default(update.Message)
 
 		}
 		//msg.ReplyToMessageID = update.Message.MessageID
