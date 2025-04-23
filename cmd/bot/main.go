@@ -34,14 +34,25 @@ func main() {
 	// a large backlog of old messages
 	time.Sleep(time.Millisecond * 500)
 	updates.Clear()
+	var msg tgbotapi.MessageConfig
 
 	for update := range updates {
 		if update.Message == nil {
 			continue
 		}
 		// Add logic here
+
+		switch update.Message.Command() {
+		case "help":
+
+			msg = tgbotapi.NewMessage(update.Message.Chat.ID, "Здеся будут подробнейшие описания")
+			msg.ReplyToMessageID = update.Message.MessageID
+		default:
+			msg = tgbotapi.NewMessage(update.Message.Chat.ID, "You wrote: "+update.Message.Text)
+		}
+
 		log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
-		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "You wrote: "+update.Message.Text)
+
 		//msg.ReplyToMessageID = update.Message.MessageID
 		bot.Send(msg)
 
