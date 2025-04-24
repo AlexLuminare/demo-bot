@@ -9,3 +9,7 @@ func (c *Commander) Help(inputMsg *tgbotapi.Message) {
 	msg.ReplyToMessageID = inputMsg.MessageID
 	c.bot.Send(msg)
 }
+
+func init() {
+	registredCommands["help"] = (*Commander).Help
+}

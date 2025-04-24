@@ -9,3 +9,7 @@ func NewService() *Service {
 func (s *Service) List() []Product {
 	return AllProducts
 }
+
+func (s *Service) Get(idx int) (*Product, error) {
+	return &AllProducts[idx], nil
+}
