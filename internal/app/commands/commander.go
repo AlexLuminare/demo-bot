@@ -3,6 +3,7 @@ package commands
 import (
 	"github.com/AlexLuminare/demo-bot/internal/service/product"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	"log"
 )
 
 // Мапа с регистрацией рабочих методов
@@ -20,6 +21,12 @@ func NewCommandRouter(bot *tgbotapi.BotAPI, service *product.Service) *Commander
 }
 
 func (c *Commander) HandleUpdate(update *tgbotapi.Update) {
+	defer func() {
+		if err := recover(); err != nil {
+			log.Printf("Recover from panic: %#v", err)
+		}
+	}()
+
 	if update.Message == nil {
 		return
 	}
