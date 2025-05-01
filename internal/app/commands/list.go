@@ -1,6 +1,10 @@
 package commands
 
-import tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+import (
+	"encoding/json"
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	"log"
+)
 
 func (c *Commander) List(inputMsg *tgbotapi.Message) {
 	var outputMsg string = "Here all the products:"
@@ -10,13 +14,20 @@ func (c *Commander) List(inputMsg *tgbotapi.Message) {
 
 	msg := tgbotapi.NewMessage(inputMsg.Chat.ID, outputMsg)
 	//msg.ReplyToMessageID = inputMsg.MessageID
+
+	serializedData, _ := json.Marshal(CommandData{
+		Offset: 21,
+	})
 	msg.ReplyMarkup = tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData("Next page", "Some Data"),
+			tgbotapi.NewInlineKeyboardButtonData("Next page", string(serializedData)),
 		),
 	)
 
-	c.bot.Send(msg)
+	_, err := c.bot.Send(msg)
+	if err != nil {
+		log.Println(err)
+	}
 }
 
 func init() {
